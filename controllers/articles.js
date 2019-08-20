@@ -29,15 +29,33 @@ router.get('/new', function(req, res) {
 })
 
 // GET /articles/:id - display a specific post and its author
+
+
+router.post('/:id', (req, res) => {
+  db.comment.create({
+    name: req.body.name,
+    content: req.body.content,
+    articleId: req.params.id
+  })
+  .then(function() {
+    res.redirect(`/articles/${req.params.id}`)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+})
+
 router.get('/:id', function(req, res) {
   db.article.findOne({
     where: { id: req.params.id },
-    include: [db.author]
+    include: [db.author, db.comment]
   })
   .then(function(article) {
     if (!article) throw Error()
-    console.log(article.author)
-    res.render('articles/show', { article: article })
+    console.log('WHEEEEEEEEEEE', article)
+    res.render('articles/show', { 
+      article: article
+    })
   })
   .catch(function(error) {
     console.log(error)
